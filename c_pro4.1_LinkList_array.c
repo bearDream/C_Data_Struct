@@ -14,7 +14,7 @@ int find(int, List*); //根据point位置查找
 int length(List*); // 返回链表的长度
 
 /*
-* 顺序表的数组实现形式
+* 顺序表的顺序结构（数组）实现形式
 */
 int main(int argc, char const *argv[])
 {

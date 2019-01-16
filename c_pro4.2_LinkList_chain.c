@@ -14,6 +14,7 @@ LinkList* find_val(int, LinkList *);  // 查找i位置的元素值
 void del_val(LinkList **, int); // 根据val值删除元素
 void del_pos(LinkList **, int); // 根据元素索引删除元素
 void print_list(LinkList *);
+int list_length(LinkList *);
 /*
 * 顺序表的链式实现形式
 */
@@ -28,11 +29,12 @@ int main(int argc, char const *argv[])
     printf("after add element-----\n");
     print_list(ptr);
     printf("after delete element by value-----\n");
-    del_val(&ptr, 2);
-    del_val(&ptr, 1);
+    del_val(&ptr, 2); // del val 2
+    del_val(&ptr, 1); // del val 1
     append_end(&ptr, 100);
-    del_pos(&ptr, 3); // del 100
+    del_pos(&ptr, 3); // del val 100
     print_list(ptr);
+    printf("length is %d \n", list_length(ptr));
     free(ptr); 
     return 0;
 }
@@ -169,4 +171,14 @@ void print_list(LinkList *head){
         count++;
     }
     printf("list length is %d \n", count);
+}
+
+int list_length(LinkList *head){
+    LinkList *p = head;
+    int j = 0;
+    while(p){
+        p = p->next;
+        j++;
+    }
+    return j;
 }
