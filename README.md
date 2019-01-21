@@ -1,7 +1,12 @@
 # C_Data_Struct
-Data Strut review
+Data Strutures review
 
-Learning Data struct by C lang.
+Learning Data structures by C lang.
 
 - LinkList
 - Stack
+- Queue
+
+Practice
+- Polynominal
+- Operation
