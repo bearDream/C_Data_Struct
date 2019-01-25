@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-
+//
 typedef struct PolyNode{
     int coef;  //系数
     int expon; // 指数

@@ -13,8 +13,8 @@ int main(int argc, char const *argv[])
     for(int i=0; i <= MAX; i++)
         a[i] = (double)i;
 
-    cal_1(MAX, a, 1.2);
-    cal_2(MAX, a, 1.2);
+    printf("%f\n", cal_1(MAX, a, 1.2));
+    printf("%f\n", cal_2(MAX, a, 1.2));
     return 0;
 }
 

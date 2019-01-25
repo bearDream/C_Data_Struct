@@ -17,39 +17,22 @@ int delQ(Queue*);
 bool isEmpty(Queue*);
 bool isFull(Queue*);
 
-/*
-*   addQ(q, 1);
-    addQ(q, 2);
-    addQ(q, 3);
-    addQ(q, 4);
-    printf("q->front is %d\n", q->front);
-    printf("del element is %d\n", delQ(q));
-    addQ(q, 5);
-*
-*
-*/
-// 队列的顺序存储结构, 循环队列
+// 队列的顺序存储结构, 由于数组实现可能造成空间浪费, 因此采用循环队列
 int main(int argc, char const *argv[])
 {
     Queue *q = create(3);
-    // addQ(q, 1);
-    // addQ(q, 2);
-    // addQ(q, 3);
-    // addQ(q, 4);
-    // printf("q->front is %d\n", q->front);
-    // printf("del element is %d\n", delQ(q));
-    // printf("del element is %d\n", delQ(q));
-    // printf("del element is %d\n", delQ(q));
-    // addQ(q, 5);
-    // addQ(q, 6);
-    // addQ(q, 7);
     addQ(q, 1);
     addQ(q, 2);
     addQ(q, 3);
     addQ(q, 4);
     printf("q->front is %d\n", q->front);
     printf("del element is %d\n", delQ(q));
+    printf("del element is %d\n", delQ(q));
+    printf("del element is %d\n", delQ(q));
     addQ(q, 5);
+    addQ(q, 6);
+    addQ(q, 7);
+
     printfQ(q);
 
     return 0;
