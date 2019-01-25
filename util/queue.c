@@ -1,28 +1,28 @@
 #include "queue.h"
 
 // 队列的链式存储结构, 不存在浪费空间的情况，因此设计为顺序链表
-int main(int argc, char const *argv[])
-{
-    LinkQueue *ptrQ;
-    ptrQ = create_queue(ptrQ);
-    int *a, *b, *c, *d, *e;
-    int a1=10, b1=11, c1=12, d1=13, e1=14;
-    a = &a1;
-    b = &b1;
-    c = &c1;
-    d = &d1;
-    e = &e1;
-    addQ(ptrQ, a);
-    addQ(ptrQ, b);
-    addQ(ptrQ, c);
-    addQ(ptrQ, d);
-    addQ(ptrQ, e);
-    printf("del element: %d \n", *(int *)delQ(ptrQ));
-    printf("del element: %d \n", *(int *)delQ(ptrQ));
-    printQ(*ptrQ);
+// int main(int argc, char const *argv[])
+// {
+//     LinkQueue *ptrQ;
+//     ptrQ = create_queue(ptrQ);
+//     int *a, *b, *c, *d, *e;
+//     int a1=10, b1=11, c1=12, d1=13, e1=14;
+//     a = &a1;
+//     b = &b1;
+//     c = &c1;
+//     d = &d1;
+//     e = &e1;
+//     addQ(ptrQ, a);
+//     addQ(ptrQ, b);
+//     addQ(ptrQ, c);
+//     addQ(ptrQ, d);
+//     addQ(ptrQ, e);
+//     printf("del element: %d \n", *(int *)delQ(ptrQ));
+//     printf("del element: %d \n", *(int *)delQ(ptrQ));
+//     printQ(*ptrQ);
 
-    return 0;
-}
+//     return 0;
+// }
 
 LinkQueue *create_queue(LinkQueue *ptrQ){
     QueueNode *node = (QueueNode *) malloc(sizeof(QueueNode));
@@ -46,7 +46,7 @@ void addQ(LinkQueue *queue, void *val){
 
 // rear 添加操作
 void *delQ(LinkQueue *queue){
-    if(isEmpty(queue)){
+    if(isEmptyQ(queue)){
         puts("Warning: queue is empty.\n");
         return NULL;
     }
@@ -56,19 +56,21 @@ void *delQ(LinkQueue *queue){
 
     queue->front = node->next;
     queue->front = node;
-    free(node);
+    // 用完注意手动释放，此处释放则返回的值取不到
+    // free(node);
     return val;
 }
 
-bool isEmpty(LinkQueue *queue){
+bool isEmptyQ(LinkQueue *queue){
     return queue->front->next == NULL ? true : false;
 }
 
 void printQ(LinkQueue queue){
     LinkQueue q = queue;
     printf("Queue:");
-    while(!isEmpty(&q)){
+    while(!isEmptyQ(&q)){
         q.front = q.front->next;
         printf("%d ", *(int *)(q.front->data));
     }
+    printf(" --end\n");
 }

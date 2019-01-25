@@ -20,7 +20,7 @@ typedef struct QueueNode{
 LinkQueue *create_queue(LinkQueue *);
 void addQ(LinkQueue *, void*);
 void *delQ(LinkQueue *);
-bool isEmpty(LinkQueue *);
+bool isEmptyQ(LinkQueue *);
 void printQ(LinkQueue);
 
 #endif
