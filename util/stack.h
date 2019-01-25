@@ -8,15 +8,15 @@
 #define MAXSIZE 1024
 
 typedef struct Stack{
-    char data[MAXSIZE];
+    void *data[MAXSIZE];
     int top;
 }Stack;
 
-Stack *create(void);
-void push(Stack *, char);
-char pop(Stack *);
+Stack *create_stack(void);
+void push(Stack *, void*);
+void *pop(Stack *);
 bool isEmpty(Stack *);
 bool isFull(Stack *);
-char getTop(Stack *);
+void *getTop(Stack *);
 
 #endif
