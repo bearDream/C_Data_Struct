@@ -11,7 +11,6 @@ typedef struct TreeNode{
     struct TreeNode *right;
 }TreeNode;
 typedef struct TreeNode *BinTree;
-typedef BinTree Position;
 
 Stack *stack;
 
