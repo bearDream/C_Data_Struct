@@ -120,7 +120,7 @@ void print_BST(TreeNode *node){
 *   1. 该节点有左子树，也有右子树
 *   2. 该节点有一个子节点，或没有子节点
 */
-TreeNode *delete_tree(int val, TreeNode *node){
+TreeNode *delete_tree(int val, TreeNode *node){c_pro11_AVL_tree.c
     TreeNode *tmp = (TreeNode *) malloc(sizeof(TreeNode));
     if(!node)
         printf("element %d not exist.\n", val);
