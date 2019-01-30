@@ -18,8 +18,6 @@ set* build_sets(); // 构建两个树，装到set数组中
 // can not run!
 int main(int argc, char const *argv[])
 {
-    build_sets(sets);
-    printf("%d ", find_x(sets, 4));
     return 0;
 }
 
