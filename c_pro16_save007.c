@@ -4,7 +4,7 @@
 // 河岸的X，Y坐标 （X= +-BORDERX; Y= +-BORDERY）
 #define BORDERX 15
 #define BORDERY 15
-#define DISTANCE 5 // 007可跳动的最大距离 最大为2个格子的距离
+#define DISTANCE 3 // 007可跳动的最大距离 最大为2个格子的距离
 #define CROCODILE 10 // 鳄鱼数量
 
 typedef struct Node{
@@ -27,15 +27,15 @@ bool is_safe(Node*); // 判断当前节点是否可以直接上岸，若可以�
 void draw_location(lake *);
 
 /*
- *  拯救007.
+ *  拯救007.(DFS的应用问题)
  *  007所处于一个湖心岛中，湖中有若干鳄鱼，007需要跳在鳄鱼头上并最终上岸
  *  问题抽象为：从坐标轴原点出发，找到一条可以上岸的路径，只有当两点之间距离小于等于3个坐标单位时才可移动 
  */
 int main(int argc, char const *argv[]){
     Node n[CROCODILE+1];
     lake *g = init_lake(n);
-    draw_location(g);
-    // find_route(n, g);
+    // draw_location(g);
+    find_route(n, g);
     return 0;
 }
 
@@ -46,8 +46,8 @@ lake *init_lake(Node n[]){
     // 随机生成鳄鱼的位置信息, 确保每个坐标点只有一条鳄鱼
     srand((unsigned)time(NULL));
     for(int i = 1; i < CROCODILE; i++){
-        n[i].x = get_rand(1, 15);
-        n[i].y = get_rand(1, 15);
+        n[i].x = get_rand(1, BORDERX);
+        n[i].y = get_rand(1, BORDERY);
     }
     lake *g = (lake *) malloc(sizeof(lake));
     g->head = n;
