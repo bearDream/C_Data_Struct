@@ -5,7 +5,7 @@
 #define BORDERX 15
 #define BORDERY 15
 #define DISTANCE 5 // 007可跳动的最大距离 最大为2个格子的距离
-#define CROCODILE 20 // 鳄鱼数量
+#define CROCODILE 10 // 鳄鱼数量
 
 typedef struct Node{
     int x; // x轴坐标
@@ -18,33 +18,13 @@ typedef struct lake{
 
 lake *init_lake(Node[]);
 void find_route(Node *, lake *);
-void find_helper(Node *);
 bool is_center(Node*);
 bool first_jump(Node*); // 判断是不是处于第一跳以及是否可以跳
 bool can_jump(Node *, Node *); // 给出007当前所在节点，判断其是否可以跳到下一个鳄鱼头
-bool DFS(Node*, bool marked[][CROCODILE], lake*); // DFS递归寻路，若返回true则表明可以上岸
+bool DFS(Node*, bool marked[][BORDERY], lake*); // DFS递归寻路，若返回true则表明可以上岸
 bool is_safe(Node*); // 判断当前节点是否可以直接上岸，若可以上岸则007可以逃脱
 
-// 测试二维数组传参
-void test(bool m[][CROCODILE], int i){
-    for(int i = 0; i < CROCODILE; i++){
-        for(int j = 0; j < CROCODILE; j++){
-            printf("mark[%d][%d]: %d", i, j, m[i][j]);
-        }
-        printf("new line----\n");    
-    }
-}
-
-void para(){
-    bool marked[CROCODILE][CROCODILE];
-    for(int i = 0; i < CROCODILE; i++){
-        for(int j = 0; j < CROCODILE; j++){
-            marked[i][j] = false;
-        }
-    }
-    marked[0][1] = true;
-    test(marked, 1);
-}
+void draw_location(lake *);
 
 /*
  *  拯救007.
@@ -54,8 +34,8 @@ void para(){
 int main(int argc, char const *argv[]){
     Node n[CROCODILE+1];
     lake *g = init_lake(n);
-    para(); // test func
-    find_route(n, g);
+    draw_location(g);
+    // find_route(n, g);
     return 0;
 }
 
@@ -77,35 +57,31 @@ lake *init_lake(Node n[]){
 void find_route(Node *g, lake *head){
     bool answer = false;
     // 1. 初始化标记数组
-    bool marked[CROCODILE][CROCODILE];
-    for(int i = 0; i < CROCODILE; i++){
-        for(int j = 0; j < CROCODILE; j++){
+    bool marked[BORDERX][BORDERY];
+    for(int i = 0; i < CROCODILE; i++)
+        for(int j = 0; j < CROCODILE; j++)
             marked[i][j] = false;
-        }
-    }
     
-    // 2. 找路
-    for(int i=0; i < CROCODILE; i++, g++){
-        // printf("crocodiles: %d  %d \n", g->x, g->y);
-
-        if (!marked[g->x][g->y] && first_jump(g)) {
-            answer = DFS(g, marked, head);
-            if (answer) break;
-        }
+    // 2. 对第一个节点用dfs找一遍路
+    if (!marked[g->x][g->y] && first_jump(g)) {
+        answer = DFS(g, marked, head);
+        // if (answer) break;
     }
-    if (answer) printf("007 was saved!..\n");
-    else printf("007 was dead!..GAME\n");
+    if (answer) printf("007 was saved!..MISSION COMPLETE\n");
+    else printf("007 was dead!..GAME OVER\n");
 }
 
-bool DFS(Node *node, bool marked[][CROCODILE], lake *g){
+bool DFS(Node *node, bool marked[][BORDERY], lake *g){
     bool answer = false;
     marked[node->x][node->y] = true;
-    if (is_safe(node)) return true;
+    if (is_safe(node)) 
+        answer = true;
     else{
         Node *temp;
         temp = g->head;
         for(int i=0; i < CROCODILE; i++, temp++){
-            if (!marked[node->x][node->y] && can_jump(node, temp)) {
+            // printf("[DEBUG]: marked[%d][%d] is %d\n", temp->x, temp->y, marked[temp->x][temp->y]);
+            if (!marked[temp->x][temp->y] && can_jump(node, temp)) {
                 answer = DFS(temp, marked, g);
                 if (answer) break;
             }
@@ -131,19 +107,23 @@ bool first_jump(Node *node){
 
 bool is_safe(Node *node){
     if ((BORDERX - node->x <= DISTANCE)
-            && (BORDERY - node->y <= DISTANCE))
+            || (BORDERY - node->y <= DISTANCE))
         return true;
     return false;
 }
 
 bool can_jump(Node * cur, Node *other){
-    printf("cur: %d--%d;  other: %d---%d\n", cur->x, cur->y, other->x, other->y);
+    printf("cur: %d--%d;  other: %d---%d", cur->x, cur->y, other->x, other->y);
     // 用other的坐标减去cur的坐标，若满足  -DISTANCE< other-cur <DISTANCE 则表示满足
     if (((other->x - cur->x <= DISTANCE) && (other->x - cur->x >= -DISTANCE)) 
-            && ((other->y - cur->y <= DISTANCE) && (other->y - cur->y >= -DISTANCE))) 
-        return true;
-    else
+            && ((other->y - cur->y <= DISTANCE) && (other->y - cur->y >= -DISTANCE))){
+                printf(" can jump!☑️️️️☑️️️️☑️️️️☑️️️️☑️️️️☑️️️️☑️️️️☑️️️️☑️️️️☑️️️️\n");
+                return true;
+            } 
+    else{
+        printf(" can not jump!✖️️️️️✖️️️️️✖️️️️️✖️️️️️✖️️️️️✖️️️️️✖️️️️️✖️️️️️✖️️️️️✖️️️️️✖️️️️️✖️️️️️\n");
         return false;
+    }
 }
 
 bool is_center(Node *node){
@@ -152,20 +132,17 @@ bool is_center(Node *node){
 }
 
 
-void find_help(Node *node){
-    // bool is_way = false; // 指明接下来是否有鳄鱼头或岸边可以逃走
-    // // 1. 从湖心找第一个节点
-    // if (is_center(*g)) {
-    //     if () {
-    //         /* code */
-    //     }
+void draw_location(lake *g){
+    for(int i = 0; i < BORDERX*2; i++){
+        for(int j = 0; j < BORDERY*2; j++){
+            printf(" ");
+        }
+        printf("+\n");
+        if (i==BORDERY) {
+            for(int k = 0; k < BORDERY*4; k++){
+                printf("+");
+            }
+        }
         
-    //     printf("%d--%d 是湖心\n", g->x, g->y);
-    //     g++;
-    //     find_route(g);
-    // }else{
-    //     printf("%d--%d 不是湖心\n", g->x, g->y);
-    // }
-    
-    // 2. 递归找寻半径内是否还有节点，若没有则返回false，否则返回true
+    }
 }
