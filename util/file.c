@@ -5,8 +5,8 @@ int main(int argc, char const *argv[]){
     FILE *file = NULL;
     str s[100];
     file = fopen("../sample_of_name.txt", "r");
-    read_file(file, s, 10);
-    for(int i = 0; i < 10; i++){
+    read_file(file, s, 5);
+    for(int i = 0; i < 5; i++){
         printf("%s", s[i].string);    
     }
     return 0;
@@ -17,7 +17,7 @@ str *read_file(FILE *file, str string[], int size){
     int len;
     char buff[100];
     FILE *stream;
-    for(int i=0; i < size-1; i++){
+    for(int i=0; i < size; i++){
         fgets(buff, 255, (FILE*) file);
         if (feof(file)) break;
         else {
@@ -27,7 +27,7 @@ str *read_file(FILE *file, str string[], int size){
                 buff[len] = 0;
             }
             strcpy(string[i].string, buff);
-            // printf("%s\n", buff);
+            // printf("%s", buff);
         }
     }
     fclose(file);
