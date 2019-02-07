@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include "./util/util.h"
+#include "./util/queue.h"
 
 #define PEOPLE 100
 
@@ -18,11 +19,12 @@ typedef struct NetWork{
 }NetWork;
 
 NetWork *initNetwork();
-void SDS();
+void SDS(NetWork *);
+bool SDS_helper(Node *);
 int BFS(Node *);
 
+void print_network(NetWork *);
 Node* new_node(char []);
-
 
 /*
  *  六度空间理论(BFS应用) 的验证
@@ -31,18 +33,40 @@ Node* new_node(char []);
  */
 int main(int argc, char const *argv[]){
     NetWork *g = initNetwork();
-    puts("Init finished.");
-    for(int i = 0; i < g->v; i++){
-        Node *node = g->Array[i].head;
-        printf("%s 的关系网有", node->data);
-        while(node != NULL){
-            printf("->%s ", node->data);
-            node = node->next;
-        }
-        printf("\n");
-    }
+    print_network(g);
     
     return 0;
+}
+
+void SDS(NetWork *g){
+    bool proportion[PEOPLE];
+    int count = 0;
+    // 1. 对每个人都尝试用六度空间寻找，最后将满足的人数和不满足的用比值表示即可
+    for(int i = 0; i < PEOPLE; i++){
+        Node *node = g->Array[i].head;
+        proportion[i] = SDS_helper(node);
+    }
+    
+    // 2. 计算比例
+    for(int j = 0; j < PEOPLE; j++){
+        if (proportion[j] == true) {
+            count++;
+        }
+    }
+    printf("满足六度空间理论的人占比为%s", (count/PEOPLE)*100);
+}
+
+// 对一个用户尝试广度优先遍历6层，如能找到则返回true
+bool SDS_helper(Node *node){
+    bool marked[PEOPLE];
+    for(int i = 0; i < PEOPLE; i++)
+        marked[i] = false;
+    
+    Node *t_node;
+    for(int i = 0; i < PEOPLE; i++){
+        
+    }
+    
 }
 
 // 初始化一个网络
@@ -93,4 +117,16 @@ Node* new_node(char data[]){
     strcpy(node->data, data);
     node->next = NULL;
     return node;
+}
+
+void print_network(NetWork *g){
+    for(int i = 0; i < g->v; i++){
+        Node *node = g->Array[i].head;
+        printf("%s 的关系网有", node->data);
+        while(node != NULL){
+            printf("->%s ", node->data);
+            node = node->next;
+        }
+        printf("\n");
+    }
 }
