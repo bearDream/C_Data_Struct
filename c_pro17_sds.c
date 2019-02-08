@@ -2,9 +2,10 @@
 #include "./util/util.h"
 #include "./util/queue.h"
 
-#define PEOPLE 100
+#define PEOPLE 10
 
 typedef struct Node{
+    int id; // 该用户的唯一标识符
     char data[20];
     struct Node *next;
 }Node;
@@ -18,13 +19,16 @@ typedef struct NetWork{
     NodeList *Array;
 }NetWork;
 
+LinkQueue *q;
+
 NetWork *initNetwork();
 void SDS(NetWork *);
-bool SDS_helper(Node *);
+bool SDS_helper(Node *, NetWork *, int); // 将要查找的用户id传过去进行查找
 int BFS(Node *);
 
+char *search_name(int, NetWork *, char *);
 void print_network(NetWork *);
-Node* new_node(char []);
+Node* new_node(char [], int);
 
 /*
  *  六度空间理论(BFS应用) 的验证
@@ -34,7 +38,8 @@ Node* new_node(char []);
 int main(int argc, char const *argv[]){
     NetWork *g = initNetwork();
     print_network(g);
-    
+
+    SDS(g);
     return 0;
 }
 
@@ -44,7 +49,7 @@ void SDS(NetWork *g){
     // 1. 对每个人都尝试用六度空间寻找，最后将满足的人数和不满足的用比值表示即可
     for(int i = 0; i < PEOPLE; i++){
         Node *node = g->Array[i].head;
-        proportion[i] = SDS_helper(node);
+        proportion[i] = SDS_helper(node, g, i);
     }
     
     // 2. 计算比例
@@ -53,23 +58,176 @@ void SDS(NetWork *g){
             count++;
         }
     }
-    printf("满足六度空间理论的人占比为%s", (count/PEOPLE)*100);
+    printf("满足六度空间理论的人占比为 %d\n", (count/PEOPLE)*100);
 }
 
 // 对一个用户尝试广度优先遍历6层，如能找到则返回true
-bool SDS_helper(Node *node){
+bool SDS_helper(Node *node, NetWork *g, int id){
     bool marked[PEOPLE];
+    int level = 0;
     for(int i = 0; i < PEOPLE; i++)
         marked[i] = false;
     
     Node *t_node;
     for(int i = 0; i < PEOPLE; i++){
-        
+        if (!marked[i]) {
+            marked[i] = true;
+
+            addQ(q, node);
+            while(!isEmptyQ(q)){
+                t_node = delQ(q);
+                printf("delQ: %s", t_node->data);
+
+                // 寻找该节点的关系网络是否有目标
+                while(t_node && level < 6){
+                    if (!marked[t_node->id]) {
+                        marked[t_node->id] = true;
+                        addQ(q, t_node);
+                        level++;
+                    }
+                    if (t_node->id == id) {
+                        // 说明找到了
+                        char t_name[20];
+                        search_name(1, g, t_name);
+                        printf("用户 %s 在 %d 层中找到了 %s ", t_node->data, level, t_name);
+                        return true;
+                    }
+                    
+                    t_node = t_node->next;
+                }
+            }
+        }
     }
+    return false;
+}
+
+char *search_name(int id, NetWork *g, char *target){
+    Node *t_head;
+    for(int i = 0; i < g->v; i++){
+        t_head = g->Array[i].head;
+        if (t_head->id == id) {
+            strcpy(target, t_head->data);
+            return target;
+        }
+    }
+    return NULL;
     
 }
 
-// 初始化一个网络
+Node* new_node(char data[], int id){
+    Node *node = (Node*) malloc(sizeof(Node));
+    strcpy(node->data, data);
+    node->id = id;
+    node->next = NULL;
+    return node;
+}
+
+void print_network(NetWork *g){
+    for(int i = 0; i < g->v; i++){
+        Node *node = g->Array[i].head;
+        printf("%s 的关系网有", node->data);
+        while(node != NULL){
+            printf("->%s ", node->data);
+            node = node->next;
+        }
+        printf("\n");
+    }
+}
+
+NetWork *initNetwork(){
+    NetWork *g = (NetWork *)malloc(sizeof(NetWork));
+    g->Array = (NodeList *) malloc(PEOPLE * sizeof(NodeList));
+    g->v = PEOPLE;
+    // 指定节点
+    g->Array[0].head = new_node("A", 0);
+    g->Array[1].head = new_node("B", 1);
+    g->Array[2].head = new_node("C", 2);
+    g->Array[3].head = new_node("D", 3);
+    g->Array[4].head = new_node("E", 4);
+    g->Array[5].head = new_node("F", 5);
+    g->Array[6].head = new_node("G", 6);
+    g->Array[7].head = new_node("H", 7);
+    g->Array[8].head = new_node("I", 8);
+    g->Array[9].head = new_node("J", 9);
+
+    // 设置关系网
+    // A->C->B->J
+    Node *node_A = g->Array[0].head;
+    node_A->next = new_node(g->Array[2].head->data, g->Array[2].head->id);
+    node_A->next->next = new_node(g->Array[1].head->data, g->Array[1].head->id);
+    node_A->next->next->next = new_node(g->Array[9].head->data, g->Array[9].head->id);
+    node_A->next->next->next->next = NULL;
+
+    // B->A->D->F
+    Node *node_B = g->Array[1].head;
+    node_B->next = new_node(g->Array[0].head->data, g->Array[0].head->id);
+    node_B->next->next = new_node(g->Array[3].head->data, g->Array[3].head->id);
+    node_B->next->next->next = new_node(g->Array[5].head->data, g->Array[5].head->id);
+    node_B->next->next->next->next = NULL;
+
+    // C->A->G
+    Node *node_C = g->Array[2].head;
+    node_C->next = new_node(g->Array[0].head->data, g->Array[0].head->id);
+    node_C->next->next = new_node(g->Array[6].head->data, g->Array[6].head->id);
+    node_C->next->next->next = NULL;
+
+    // D B I H
+    Node *node_D = g->Array[3].head;
+    node_D->next = new_node(g->Array[1].head->data, g->Array[1].head->id);
+    node_D->next->next = new_node(g->Array[8].head->data, g->Array[8].head->id);
+    node_D->next->next->next = new_node(g->Array[7].head->data, g->Array[7].head->id);
+    node_D->next->next->next->next = NULL;
+
+    // E B F G
+    Node *node_E = g->Array[4].head;
+    node_E->next = new_node(g->Array[1].head->data, g->Array[1].head->id);
+    node_E->next->next = new_node(g->Array[5].head->data, g->Array[5].head->id);
+    node_E->next->next->next = new_node(g->Array[6].head->data, g->Array[6].head->id);
+    node_E->next->next->next->next = NULL;
+
+    // F B
+    Node *node_F = g->Array[5].head;
+    node_F->next = new_node(g->Array[1].head->data, g->Array[1].head->id);
+    node_F->next->next = NULL;
+
+    // G C E
+    Node *node_G = g->Array[6].head;
+    node_G->next = new_node(g->Array[2].head->data, g->Array[2].head->id);
+    node_G->next->next = new_node(g->Array[4].head->data, g->Array[4].head->id);
+    node_G->next->next->next = NULL;
+
+    // H I D
+    Node *node_H = g->Array[7].head;
+    node_H->next = new_node(g->Array[8].head->data, g->Array[8].head->id);
+    node_H->next->next = new_node(g->Array[3].head->data, g->Array[3].head->id);
+    node_H->next->next->next = NULL;
+
+    // I D H
+    Node *node_I = g->Array[8].head;
+    node_I->next = new_node(g->Array[3].head->data, g->Array[3].head->id);
+    node_I->next->next = new_node(g->Array[7].head->data, g->Array[7].head->id);
+    node_I->next->next->next = NULL;
+
+    // J A
+    Node *node_J = g->Array[9].head;
+    node_J->next = new_node(g->Array[0].head->data, g->Array[0].head->id);
+    node_J->next->next = NULL;
+
+    // // K J
+    // Node *node_K = g->Array[10].head;
+    // node_K->next = new_node(g->Array[9].head->data, g->Array[9].head->id);
+    // node_K->next->next = NULL;
+
+    // // L J
+    // Node *node_L = g->Array[11].head;
+    // node_L->next = g->Array[9].head;
+    // node_L->next->next = NULL;
+
+    return g;
+}
+
+/*
+// 初始化一个网络, 随机生成的关系网算法不正确，此种生成的关系网是矛盾的
 NetWork *initNetwork(){
     NetWork *g = (NetWork *)malloc(sizeof(NetWork));
     g->Array = (NodeList *) malloc(PEOPLE * sizeof(NodeList));
@@ -92,7 +250,8 @@ NetWork *initNetwork(){
     Node *node;
     // 设置网络中的人数
     for(int i = 0; i < PEOPLE; i++){
-        g->Array[i].head = new_node(s[count].string);
+        g->Array[i].head = new_node(s[count].string, i);
+
         count++;
     }
 
@@ -111,22 +270,4 @@ NetWork *initNetwork(){
     
     return g;    
 }
-
-Node* new_node(char data[]){
-    Node *node = (Node*) malloc(sizeof(Node));
-    strcpy(node->data, data);
-    node->next = NULL;
-    return node;
-}
-
-void print_network(NetWork *g){
-    for(int i = 0; i < g->v; i++){
-        Node *node = g->Array[i].head;
-        printf("%s 的关系网有", node->data);
-        while(node != NULL){
-            printf("->%s ", node->data);
-            node = node->next;
-        }
-        printf("\n");
-    }
-}
+*/
