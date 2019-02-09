@@ -23,7 +23,7 @@ LinkQueue *q;
 
 NetWork *initNetwork();
 void SDS(NetWork *);
-bool SDS_helper(Node *, NetWork *, int); // 将要查找的用户id传过去进行查找
+int SDS_helper(Node *, NetWork *); // 将要查找的用户id传过去进行查找
 int BFS(Node *);
 
 char *search_name(int, NetWork *, char *);
@@ -37,6 +37,7 @@ Node* new_node(char [], int);
  */
 int main(int argc, char const *argv[]){
     NetWork *g = initNetwork();
+    q = create_queue(q);
     print_network(g);
 
     SDS(g);
@@ -46,59 +47,49 @@ int main(int argc, char const *argv[]){
 void SDS(NetWork *g){
     bool proportion[PEOPLE];
     int count = 0;
-    // 1. 对每个人都尝试用六度空间寻找，最后将满足的人数和不满足的用比值表示即可
+    // 1. 对每个人都尝试用六度空间寻找
     for(int i = 0; i < PEOPLE; i++){
         Node *node = g->Array[i].head;
-        proportion[i] = SDS_helper(node, g, i);
+        int c = SDS_helper(node, g);
+        printf("count：%d  people %d\n", c, PEOPLE);
     }
-    
-    // 2. 计算比例
-    for(int j = 0; j < PEOPLE; j++){
-        if (proportion[j] == true) {
-            count++;
-        }
-    }
-    printf("满足六度空间理论的人占比为 %d\n", (count/PEOPLE)*100);
 }
 
-// 对一个用户尝试广度优先遍历6层，如能找到则返回true
-bool SDS_helper(Node *node, NetWork *g, int id){
+// 对一个用户尝试广度优先遍历6层, 返回访问过多少人的数量
+int SDS_helper(Node *node, NetWork *g){
     bool marked[PEOPLE];
-    int level = 0;
     for(int i = 0; i < PEOPLE; i++)
         marked[i] = false;
     
-    Node *t_node;
-    for(int i = 0; i < PEOPLE; i++){
-        if (!marked[i]) {
-            marked[i] = true;
+    Node *tail;
+    int level = 0; // 层数
+    int count = 1; // 访问的节点数
+    Node *last = node; // 指示一层中最后一个元素
+    marked[node->id] = true;
+    addQ(q, node);
+    while(!isEmptyQ(q)){
+        node = delQ(q);
+        printf("delQ: %s ", node->data);
 
-            addQ(q, node);
-            while(!isEmptyQ(q)){
-                t_node = delQ(q);
-                printf("delQ: %s", t_node->data);
-
-                // 寻找该节点的关系网络是否有目标
-                while(t_node && level < 6){
-                    if (!marked[t_node->id]) {
-                        marked[t_node->id] = true;
-                        addQ(q, t_node);
-                        level++;
-                    }
-                    if (t_node->id == id) {
-                        // 说明找到了
-                        char t_name[20];
-                        search_name(1, g, t_name);
-                        printf("用户 %s 在 %d 层中找到了 %s ", t_node->data, level, t_name);
-                        return true;
-                    }
-                    
-                    t_node = t_node->next;
-                }
+        // 寻找该节点的关系网络是否有目标
+        while(node){
+            if (!marked[node->id]) {
+                marked[node->id] = true;
+                addQ(q, node);
+                count++;
+                tail = node;
             }
+            if (node->id == last->id) {
+                level++;
+                last = tail;
+            }
+            
+            if (level == 6) break;    
+            
+            node = node->next;
         }
     }
-    return false;
+    return count;
 }
 
 char *search_name(int id, NetWork *g, char *target){
@@ -158,12 +149,13 @@ NetWork *initNetwork(){
     node_A->next->next->next = new_node(g->Array[9].head->data, g->Array[9].head->id);
     node_A->next->next->next->next = NULL;
 
-    // B->A->D->F
+    // B->A->D->E->F
     Node *node_B = g->Array[1].head;
     node_B->next = new_node(g->Array[0].head->data, g->Array[0].head->id);
     node_B->next->next = new_node(g->Array[3].head->data, g->Array[3].head->id);
-    node_B->next->next->next = new_node(g->Array[5].head->data, g->Array[5].head->id);
-    node_B->next->next->next->next = NULL;
+    node_B->next->next->next = new_node(g->Array[4].head->data, g->Array[4].head->id);
+    node_B->next->next->next->next = new_node(g->Array[5].head->data, g->Array[5].head->id);
+    node_B->next->next->next->next->next = NULL;
 
     // C->A->G
     Node *node_C = g->Array[2].head;
