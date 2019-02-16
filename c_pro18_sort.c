@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include "util/util.h"
+#include "util/heap.h"
 
 #define RAND_UPPER 1000
 #define RAND_LOWER 1
