@@ -15,6 +15,7 @@ struct Heap{
     int size; // 堆的当前元素数
 };
 
+// 创建的堆。从第0个元素开始排起
 MaxHeap create_heap();
 void insert_heap(int, MaxHeap);
 int delete_heap(MaxHeap); // 堆每次删除的元素都是最大(小)的元素
