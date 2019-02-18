@@ -1,5 +1,3 @@
-#include <stdbool.h>
-#include "util/util.h"
 #include "util/heap.h"
 
 #define RAND_UPPER 1000
@@ -13,6 +11,7 @@ void *shell_sort(int [], int); // 希尔排序
 void *heap_sort(int [], int); // 堆排序
 
 void swap(int *, int *);
+void swap_heap(int[], int, int);
 void print_array(int [], int size);
 int find_min(int [], int, int);
 
@@ -30,14 +29,19 @@ int main(int argc, char const *argv[]){
     // print_array(arr, size);
 
     // 插入/冒泡排序
-    bubble_sort(arr, size);
-    puts("after bubble sort:");
-    print_array(arr, size);
+    // bubble_sort(arr, size);
+    // puts("after bubble sort:");
+    // print_array(arr, size);
     
     // 希尔排序
     // shell_sort(arr, size);
     // puts("after shell sort:");
     // print_array(arr, size);
+
+    // 堆排序
+    heap_sort(arr, size);
+    puts("after heap sort:");
+    print_array(arr, size);
     return 0;
 }
 
@@ -96,8 +100,34 @@ void *shell_sort(int array[], int size){
         }
     }
     return array;
-    
 }
+
+void *heap_sort(int array[], int size){
+
+    int i;
+    for(i = size/2; i > 0; i--){
+        adjust_heap(array, i, size);
+    }
+    
+    for(i = size; i > 1; i--){
+        swap_heap(array, 0, i-1);
+        adjust_heap(array, 1, i-1);
+    }
+    return array;
+}
+
+void swap_heap(int arr[], int top, int last){
+
+    // arr[top] = arr[top] ^ arr[last];
+    // arr[last] = arr[last] ^ arr[top];
+    // arr[top] = arr[top] ^ arr[last];
+    int tmp = arr[top];
+    arr[top] = arr[last];
+    arr[last] = tmp;
+    return;
+}
+
+
 
 void *init_array(int array[], int size){
     for(int i = 0; i < size; i++){
