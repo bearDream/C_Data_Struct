@@ -1,9 +1,7 @@
 #ifndef _HEAP_H
 #define _HEAP_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include "./util.h"
 
 #define MAXDATA 2147483647
 #define MAXCAP 100
@@ -17,6 +15,7 @@ struct Heap{
 
 // 创建的堆。从第0个元素开始排起
 MaxHeap create_heap();
+void adjust_heap(int[], int, int); //调整堆 @param array,  adjust vertex index,  size
 void insert_heap(int, MaxHeap);
 int delete_heap(MaxHeap); // 堆每次删除的元素都是最大(小)的元素
 bool is_heap_empty(MaxHeap);

@@ -1,18 +1,18 @@
 #include "heap.h"
 
-int main(int argc, char const *argv[])
-{
-    MaxHeap head = create_heap();
-    insert_heap(60, head);
-    insert_heap(65, head);
-    insert_heap(50, head);
-    insert_heap(55, head);
-    insert_heap(59, head);
-    insert_heap(70, head);
+// int main(int argc, char const *argv[])
+// {
+//     MaxHeap head = create_heap();
+//     insert_heap(60, head);
+//     insert_heap(65, head);
+//     insert_heap(50, head);
+//     insert_heap(55, head);
+//     insert_heap(59, head);
+//     insert_heap(70, head);
 
-    print_heap(head);
-    return 0;
-}
+//     print_heap(head);
+//     return 0;
+// }
 
 
 MaxHeap create_heap(){
@@ -65,6 +65,30 @@ int delete_heap(MaxHeap h){
     // 将序号最大的元素替换在找到的parent位置
     h->elements[parent-1] = temp;
     return max_item;
+}
+
+// 调整二叉树为堆结构，循环调用此函数可将一棵树调整为最大堆
+// @param A:调整的跟节点索引
+void adjust_heap(int arr[], int A, int size){
+    int tmp, j;
+
+    tmp = arr[A-1]; // 数组从0开始排起
+    for(j = 2*A; j <= size; j*=2){
+        
+        // 找到较大叶子节点
+        if (j<size && arr[j-1] < arr[j]) {
+            j++;
+        }
+
+        // 若根节点大于较大的叶子节点则什么都不做，跳出循环，表示以调整完成
+        if (arr[A-1] >= arr[j-1]) break;
+        
+        // 否则将根节点和较大叶子节点交换
+        arr[A-1] = arr[j-1];
+        A = j;
+        arr[A-1] = tmp;
+    }
+    arr[A-1] = tmp;
 }
 
 void print_heap(MaxHeap h){
