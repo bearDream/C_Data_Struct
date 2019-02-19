@@ -9,17 +9,22 @@ void *bubble_sort(int [], int); // 冒泡排序
 void *insert_sort(int [], int); // 插入排序
 void *shell_sort(int [], int); // 希尔排序
 void *heap_sort(int [], int); // 堆排序
-void *merge_sort(int [], int); // 归并排序
+void *merge_sort_recursive(int [], int); // 归并排序recursive
+void *merge_sort_foreach(int [], int); // 归并排序foreach
 
+// 归并排序(foreach)
+void merge_pass(int [], int [], int, int);
+// 归并排序(Recursive)
 void msort(int[], int[], int, int);
-void merge(int[], int[], int, int, int);
+void merge(int[], int[], int, int, int, int);
+
 void swap(int *, int *);
 void swap_heap(int[], int, int);
 void print_array(int [], int size);
 int find_min(int [], int, int);
 
 int main(int argc, char const *argv[]){
-    int size = 10;
+    int size = 100;
     int arr[size];
     // 初始化随机数据
     init_array(arr, size);
@@ -46,9 +51,14 @@ int main(int argc, char const *argv[]){
     // puts("after heap sort:");
     // print_array(arr, size);
 
-    // 归并排序
-    merge_sort(arr, size);
-    puts("after Merge sort:");
+    // 归并排序(recursive)
+    // merge_sort_recursive(arr, size);
+    // puts("after Merge_recursive sort:");
+    // print_array(arr, size);
+
+    // 归并排序(foreach)
+    merge_sort_foreach(arr, size);
+    puts("after Merge_foreach sort:");
     print_array(arr, size);
     return 0;
 }
@@ -125,8 +135,38 @@ void *heap_sort(int array[], int size){
     return array;
 }
 
-// 归并排序
-void *merge_sort(int array[], int size){
+// 归并排序(foreach)
+void *merge_sort_foreach(int array[], int size){
+    int length = 1;
+    int *tmp = (int *) malloc(size*sizeof(int));
+    
+    if (tmp != NULL) {
+        while(length < size){
+            merge_pass(array, tmp, size, length);
+            length *=2;
+            merge_pass(tmp, array, size, length); // 排两会
+            length *=2;
+        }
+        
+    }else puts("空间不足");
+    
+    return array;
+}
+
+void merge_pass(int origin_array[], int tmp_array[], int N, int len){
+    int i = 0;
+    for(; i < N - 2*len; i+= 2*len)
+        merge(origin_array, tmp_array, i, i+len, i+2*len-1, 0);
+    
+    // 处理后面不成对的尾巴
+    if (i + len < N) // 归并最后两个子列
+        merge(origin_array, tmp_array, i, i+len, N-1, 0);
+    else // 归并最后一个子列
+        for(int j = i; j < N; j++) tmp_array[j] = origin_array[j];
+}
+
+// 归并排序(recursive)
+void *merge_sort_recursive(int array[], int size){
     int *tmp = (int *) malloc(size*sizeof(int));
     msort(array, tmp, 0, size-1);
     return array;
@@ -138,11 +178,12 @@ void msort(int orig_arr[], int tmp_arr[], int L, int RightEnd){
         center = (L + RightEnd) / 2;
         msort(orig_arr, tmp_arr, L, center);
         msort(orig_arr, tmp_arr, center+1, RightEnd);
-        merge(orig_arr, tmp_arr, L, center+1, RightEnd);
+        merge(orig_arr, tmp_arr, L, center+1, RightEnd, 1);
     }
 }
 
-void merge(int orig_arr[], int tmp_arr[], int L, int R, int RightEnd){
+// flag 标示是否需要将tmp_arr倒回orig_arr中
+void merge(int orig_arr[], int tmp_arr[], int L, int R, int RightEnd, int flag){
 
     int leftEnd = R - 1;
     int tmp = L;
@@ -161,13 +202,16 @@ void merge(int orig_arr[], int tmp_arr[], int L, int R, int RightEnd){
     while(R <= RightEnd)
         tmp_arr[tmp++] = orig_arr[R++];
 
-    puts("合并一次--");
-    // 将tmp_arr中的元素倒入orig_arr中
-    for(int i = 0; i < numElements; i++, RightEnd--){
-        orig_arr[RightEnd] = tmp_arr[RightEnd];
-        printf("%d ", orig_arr[RightEnd]);
+    // 对于递归算法，需要将tmp_arr倒回原数组中，对于foreach版则不需要
+    if (flag == 1) {
+        puts("合并一次--");
+        // 将tmp_arr中的元素倒入orig_arr中
+        for(int i = 0; i < numElements; i++, RightEnd--){
+            orig_arr[RightEnd] = tmp_arr[RightEnd];
+            printf("%d ", orig_arr[RightEnd]);
+        }
+        printf("\n"); 
     }
-    printf("\n");
     
 }
 
