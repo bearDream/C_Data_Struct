@@ -9,7 +9,10 @@ void *bubble_sort(int [], int); // 冒泡排序
 void *insert_sort(int [], int); // 插入排序
 void *shell_sort(int [], int); // 希尔排序
 void *heap_sort(int [], int); // 堆排序
+void *merge_sort(int [], int); // 归并排序
 
+void msort(int[], int[], int, int);
+void merge(int[], int[], int, int, int);
 void swap(int *, int *);
 void swap_heap(int[], int, int);
 void print_array(int [], int size);
@@ -39,8 +42,13 @@ int main(int argc, char const *argv[]){
     // print_array(arr, size);
 
     // 堆排序
-    heap_sort(arr, size);
-    puts("after heap sort:");
+    // heap_sort(arr, size);
+    // puts("after heap sort:");
+    // print_array(arr, size);
+
+    // 归并排序
+    merge_sort(arr, size);
+    puts("after Merge sort:");
     print_array(arr, size);
     return 0;
 }
@@ -102,6 +110,7 @@ void *shell_sort(int array[], int size){
     return array;
 }
 
+// 堆排序
 void *heap_sort(int array[], int size){
 
     int i;
@@ -116,18 +125,60 @@ void *heap_sort(int array[], int size){
     return array;
 }
 
-void swap_heap(int arr[], int top, int last){
+// 归并排序
+void *merge_sort(int array[], int size){
+    int *tmp = (int *) malloc(size*sizeof(int));
+    msort(array, tmp, 0, size-1);
+    return array;
+}
 
-    // arr[top] = arr[top] ^ arr[last];
-    // arr[last] = arr[last] ^ arr[top];
-    // arr[top] = arr[top] ^ arr[last];
+void msort(int orig_arr[], int tmp_arr[], int L, int RightEnd){
+    int center;
+    if (L < RightEnd) {
+        center = (L + RightEnd) / 2;
+        msort(orig_arr, tmp_arr, L, center);
+        msort(orig_arr, tmp_arr, center+1, RightEnd);
+        merge(orig_arr, tmp_arr, L, center+1, RightEnd);
+    }
+}
+
+void merge(int orig_arr[], int tmp_arr[], int L, int R, int RightEnd){
+
+    int leftEnd = R - 1;
+    int tmp = L;
+    int numElements = RightEnd - L + 1;
+
+    while(L <= leftEnd && R <= RightEnd){
+        if (orig_arr[L] <= orig_arr[R]) 
+            tmp_arr[tmp++] = orig_arr[L++];
+        else 
+            tmp_arr[tmp++] = orig_arr[R++];
+    }
+
+    // 若左右两个数组中有一个还有剩余的，则将剩余元素全部追加到tmp_arr中
+    while(L <= leftEnd)
+        tmp_arr[tmp++] = orig_arr[L++];
+    while(R <= RightEnd)
+        tmp_arr[tmp++] = orig_arr[R++];
+
+    puts("合并一次--");
+    // 将tmp_arr中的元素倒入orig_arr中
+    for(int i = 0; i < numElements; i++, RightEnd--){
+        orig_arr[RightEnd] = tmp_arr[RightEnd];
+        printf("%d ", orig_arr[RightEnd]);
+    }
+    printf("\n");
+    
+}
+
+
+
+void swap_heap(int arr[], int top, int last){
     int tmp = arr[top];
     arr[top] = arr[last];
     arr[last] = tmp;
     return;
 }
-
-
 
 void *init_array(int array[], int size){
     for(int i = 0; i < size; i++){
