@@ -28,48 +28,87 @@ void swap_heap(int[], int, int);
 void print_array(int [], int size);
 int find_min(int [], int, int);
 
+clock_t start_time, end_time;
 int main(int argc, char const *argv[]){
-    int size = 103;
+    int size = 2000000;
     int arr[size];
+
+    int number = 100000;
+    double cal_time;
+
     // 初始化随机数据
     init_array(arr, size);
-    puts("orginal array:");
-    print_array(arr, size);
+    // puts("orginal array:");
+    // print_array(arr, size);
 
     // 选择排序
+    start_time = clock();
     // selection_sort(arr, size);
     // puts("after selection sort:");
     // print_array(arr, size);
+    end_time = clock();
+    cal_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+    printf("----选择排序 time: %f s--- \n", cal_time);
 
+    init_array(arr, size);
     // 插入/冒泡排序
+    start_time = clock();
     // bubble_sort(arr, size);
     // puts("after bubble sort:");
     // print_array(arr, size);
-    
+    end_time = clock();
+    cal_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+    printf("----冒泡排序 time: %f s--- \n", cal_time);
+
+    init_array(arr, size);
     // 希尔排序
-    // shell_sort(arr, size);
+    start_time = clock();
+    shell_sort(arr, size);
     // puts("after shell sort:");
     // print_array(arr, size);
+    end_time = clock();
+    cal_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+    printf("----希尔排序 time: %f s--- \n", cal_time);
 
+    init_array(arr, size);
     // 堆排序
-    // heap_sort(arr, size);
+    start_time = clock();
+    heap_sort(arr, size);
     // puts("after heap sort:");
     // print_array(arr, size);
+    end_time = clock();
+    cal_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+    printf("----堆排序 time: %f s--- \n", cal_time);
 
+    init_array(arr, size);
     // 归并排序(recursive)
-    // merge_sort_recursive(arr, size);
+    start_time = clock();
+    merge_sort_recursive(arr, size);
     // puts("after Merge_recursive sort:");
     // print_array(arr, size);
+    end_time = clock();
+    cal_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+    printf("----归并排序recursive time: %f s--- \n", cal_time);
 
+    init_array(arr, size);
     // 归并排序(foreach)
-    // merge_sort_foreach(arr, size);
+    start_time = clock();
+    merge_sort_foreach(arr, size);
     // puts("after Merge_foreach sort:");
     // print_array(arr, size);
-
+    end_time = clock();
+    cal_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+    printf("----归并排序foreach time: %f s--- \n", cal_time);
+    
+    init_array(arr, size);
     // 快速排序
+    start_time = clock();
     fast_sort(arr, size);
-    puts("after fast sort:");
-    print_array(arr, size);
+    // puts("after fast sort:");
+    // print_array(arr, size);
+    end_time = clock();
+    cal_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+    printf("----快速排序 time: %f s--- \n", cal_time);
     return 0;
 }
 
@@ -116,7 +155,6 @@ void *insert_sort(int array[], int size){
 //  s = 4^i - 3* 2^i + 1; s = 9*4^i - 9*2^i + 1;  
 void *shell_sort(int array[], int size){
 
-    printf("shell----\n");
     int tmp, k;
     for(int D = size/2; D > 0; D/=2){ // 设步长
         // 插入排
@@ -258,13 +296,12 @@ void merge(int orig_arr[], int tmp_arr[], int L, int R, int RightEnd, int flag){
 
     // 对于递归算法，需要将tmp_arr倒回原数组中，对于foreach版则不需要
     if (flag == 1) {
-        puts("合并一次--");
         // 将tmp_arr中的元素倒入orig_arr中
         for(int i = 0; i < numElements; i++, RightEnd--){
             orig_arr[RightEnd] = tmp_arr[RightEnd];
-            printf("%d ", orig_arr[RightEnd]);
+            // printf("%d ", orig_arr[RightEnd]);
         }
-        printf("\n"); 
+        // printf("\n"); 
     }
     
 }
