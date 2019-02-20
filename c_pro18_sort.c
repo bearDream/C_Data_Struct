@@ -11,7 +11,12 @@ void *shell_sort(int [], int); // 希尔排序
 void *heap_sort(int [], int); // 堆排序
 void *merge_sort_recursive(int [], int); // 归并排序recursive
 void *merge_sort_foreach(int [], int); // 归并排序foreach
+void *fast_sort(int [], int);
 
+
+// 快排 实现
+void fsort(int [], int, int, int);
+int median(int [], int, int); //获取中位数
 // 归并排序(foreach)
 void merge_pass(int [], int [], int, int);
 // 归并排序(Recursive)
@@ -24,7 +29,7 @@ void print_array(int [], int size);
 int find_min(int [], int, int);
 
 int main(int argc, char const *argv[]){
-    int size = 100;
+    int size = 103;
     int arr[size];
     // 初始化随机数据
     init_array(arr, size);
@@ -57,8 +62,13 @@ int main(int argc, char const *argv[]){
     // print_array(arr, size);
 
     // 归并排序(foreach)
-    merge_sort_foreach(arr, size);
-    puts("after Merge_foreach sort:");
+    // merge_sort_foreach(arr, size);
+    // puts("after Merge_foreach sort:");
+    // print_array(arr, size);
+
+    // 快速排序
+    fast_sort(arr, size);
+    puts("after fast sort:");
     print_array(arr, size);
     return 0;
 }
@@ -144,13 +154,57 @@ void *merge_sort_foreach(int array[], int size){
         while(length < size){
             merge_pass(array, tmp, size, length);
             length *=2;
-            merge_pass(tmp, array, size, length); // 排两会
+            merge_pass(tmp, array, size, length); // 排两回
             length *=2;
         }
         
     }else puts("空间不足");
     
     return array;
+}
+
+// 快速排序
+void *fast_sort(int array[], int size){
+    int cutoff = 5; //当快排分割到一个区间小于等于5个元素时，使用选择排序即可
+    fsort(array, 0, size-1, cutoff);
+    return array;
+}
+
+void fsort(int array[], int left, int right, int cutoff){
+    if (cutoff <= right - left) {
+        // 选取pivot
+        int pivot = median(array, left, right);
+        int l = left;
+        int r = right-1;
+        while(1){
+            while(array[++l] < pivot){}
+            while(array[--r] > pivot){}
+            if (l < r) 
+                swap(&array[l], &array[r]);
+            else break; // 当左边的序列索引超过右边结束循环
+        }
+        swap(&array[l], &array[right-1]);
+        fsort(array, left, l-1, cutoff);
+        fsort(array, l+1, right, cutoff);
+    }else{
+        //使用插入排序
+        insert_sort(array+left, right-left+1);
+    }
+}
+
+// 取中位数作为枢纽
+int median(int array[], int left, int right){
+    int pivot = (left + right) / 2;
+    if (array[left] > array[pivot])
+        swap(&array[left], &array[pivot]);
+    if (array[left] > array[right])
+        swap(&array[left], &array[right]);    
+    if (array[pivot] > array[right])
+        swap(&array[pivot], &array[right]);
+
+    swap(&array[pivot], &array[right-1]);
+
+    return array[right-1];
 }
 
 void merge_pass(int origin_array[], int tmp_array[], int N, int len){
