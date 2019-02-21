@@ -11,7 +11,7 @@ void *shell_sort(int [], int); // 希尔排序
 void *heap_sort(int [], int); // 堆排序
 void *merge_sort_recursive(int [], int); // 归并排序recursive
 void *merge_sort_foreach(int [], int); // 归并排序foreach
-void *fast_sort(int [], int);
+void *fast_sort(int [], int); // 快速排序 （数据基本有序时效率最差）
 
 
 // 快排 实现
@@ -30,7 +30,7 @@ int find_min(int [], int, int);
 
 clock_t start_time, end_time;
 int main(int argc, char const *argv[]){
-    int size = 2000000;
+    int size = 1000;
     int arr[size];
 
     int number = 100000;
@@ -43,7 +43,7 @@ int main(int argc, char const *argv[]){
 
     // 选择排序
     start_time = clock();
-    // selection_sort(arr, size);
+    selection_sort(arr, size);
     // puts("after selection sort:");
     // print_array(arr, size);
     end_time = clock();
@@ -53,7 +53,7 @@ int main(int argc, char const *argv[]){
     init_array(arr, size);
     // 插入/冒泡排序
     start_time = clock();
-    // bubble_sort(arr, size);
+    bubble_sort(arr, size);
     // puts("after bubble sort:");
     // print_array(arr, size);
     end_time = clock();
